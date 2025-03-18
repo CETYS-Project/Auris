@@ -1,4 +1,4 @@
-package com.example.loading;
+package com.cetys.loading;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
