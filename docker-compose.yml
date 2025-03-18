@@ -1,0 +1,14 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:16
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_DB: loading
+      POSTGRES_USER: loading
+      POSTGRES_PASSWORD: loading
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./tmp:/var/lib/postgresql/data
