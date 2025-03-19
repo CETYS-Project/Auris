@@ -1,4 +1,4 @@
-package com.cetys.loading.configuration;
+package com.cetys.loading.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
