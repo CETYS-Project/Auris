@@ -11,11 +11,12 @@ import lombok.Setter;
 public class Area extends BaseEntity {
 
     @Id
-    @Column(name="area_id", columnDefinition = "serial")
+    @Column(name="area_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int areaId;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "org_id")
     Org org;
 
     @Column(name="name")

@@ -11,7 +11,7 @@ import lombok.Setter;
 public class Audit extends BaseEntity {
 
     @Id
-    @Column(name="audit_id", columnDefinition = "serial")
+    @Column(name="audit_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int auditId;
 

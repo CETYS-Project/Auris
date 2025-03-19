@@ -13,11 +13,12 @@ import java.time.LocalDateTime;
 public class OrgInvite extends BaseEntity {
 
     @Id
-    @Column(name="org_invite_id", columnDefinition = "serial")
+    @Column(name="org_invite_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int orgInviteId;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "org_id")
     Org org;
 
     @Column(name="code")

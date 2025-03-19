@@ -12,11 +12,12 @@ public class BaseQuestion extends BaseEntity {
 
 
     @Id
-    @Column(name="base_question_id", columnDefinition = "serial")
+    @Column(name="base_question_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int baseQuestionId;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "base_category_id")
     BaseCategory baseCategory;
 
     @Column(name="question")

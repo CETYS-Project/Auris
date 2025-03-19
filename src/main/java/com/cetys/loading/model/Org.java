@@ -11,7 +11,7 @@ import lombok.Setter;
 public class Org extends BaseEntity {
 
     @Id
-    @Column(name="org_id", columnDefinition = "serial")
+    @Column(name="org_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int org_id;
 

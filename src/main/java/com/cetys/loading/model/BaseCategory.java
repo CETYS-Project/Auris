@@ -13,7 +13,7 @@ public class BaseCategory extends BaseEntity {
     public static enum SCategory { S1, S2, S3, S4, S5 }
 
     @Id
-    @Column(name="base_category_id", columnDefinition = "serial")
+    @Column(name="base_category_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int baseCategoryId;
 

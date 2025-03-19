@@ -10,16 +10,17 @@ import lombok.Setter;
 @Setter
 public class AuditQuestion extends BaseEntity {
 
-
     @Id
-    @Column(name="audit_question_id", columnDefinition = "serial")
+    @Column(name="audit_question_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int auditQuestionId;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "audit_category_id")
     AuditCategory auditCategory;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "base_question_id")
     BaseQuestion baseQuestion;
 
     @Column(name="question")

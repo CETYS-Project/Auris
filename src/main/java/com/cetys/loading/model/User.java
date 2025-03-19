@@ -7,13 +7,13 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name="user")
+@Table(name="app_user")
 @Getter
 @Setter
 public class User extends BaseEntity {
 
     @Id
-    @Column(name="user_id", columnDefinition = "serial")
+    @Column(name="user_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int userId;
 

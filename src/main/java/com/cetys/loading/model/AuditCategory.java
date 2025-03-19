@@ -13,11 +13,12 @@ public class AuditCategory extends BaseEntity {
     public static enum SCategory { S1, S2, S3, S4, S5 }
 
     @Id
-    @Column(name="audit_category_id", columnDefinition = "serial")
+    @Column(name="audit_category_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int auditCategoryId;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "subarea_id")
     Subarea subarea;
 
     @Column(name="s_category")
@@ -30,5 +31,6 @@ public class AuditCategory extends BaseEntity {
     String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "base_category_id")
     BaseCategory baseCategory;
 }
