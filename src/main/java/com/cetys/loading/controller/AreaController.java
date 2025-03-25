@@ -36,7 +36,7 @@ public class AreaController {
         return ResponseEntity.status(201).body(createdArea);
     }
 
-    @PutMapping
+    @PutMapping ("/{id}")
     public ResponseEntity<Area> updateArea(@PathVariable Long id, @RequestBody Area areaDetails) {
         Area updatedArea = areaService.updateArea(id, areaDetails);
         return updatedArea != null ? ResponseEntity.ok(updatedArea)
