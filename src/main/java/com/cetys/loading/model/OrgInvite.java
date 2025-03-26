@@ -1,29 +1,37 @@
 package com.cetys.loading.model;
 
-import jakarta.persistence.*;
+import java.time.LocalDateTime;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
-
 @Entity
-@Table(name="org_invite")
+@Table(name = "org_invite")
 @Getter
 @Setter
 public class OrgInvite extends BaseEntity {
 
     @Id
-    @Column(name="org_invite_id")
+    @Column(name = "org_invite_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int orgInviteId;
+    Long orgInviteId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "org_id")
     Org org;
 
-    @Column(name="code")
+    @Column(name = "code")
     String code;
 
-    @Column(name="expires")
+    @Column(name = "expires")
     LocalDateTime expires;
 }
