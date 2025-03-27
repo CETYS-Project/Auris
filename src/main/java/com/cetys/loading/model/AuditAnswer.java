@@ -21,7 +21,7 @@ public class AuditAnswer extends BaseEntity {
     @Id
     @Column(name = "audit_answer_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long auditAnswerId;
+    Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "audit_question_id")

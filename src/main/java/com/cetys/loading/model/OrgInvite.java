@@ -23,7 +23,7 @@ public class OrgInvite extends BaseEntity {
     @Id
     @Column(name = "org_invite_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long orgInviteId;
+    Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "org_id")

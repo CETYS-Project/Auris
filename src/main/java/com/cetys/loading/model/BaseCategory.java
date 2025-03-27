@@ -19,6 +19,9 @@ import lombok.Setter;
 @Setter
 public class BaseCategory extends BaseEntity {
 
+    public BaseCategory() {
+    }
+
     public BaseCategory(String name, String description, SCategory category) {
         this.name = name;
         this.description = description;
@@ -28,7 +31,7 @@ public class BaseCategory extends BaseEntity {
     @Id
     @Column(name = "base_category_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long baseCategoryId;
+    Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     Subarea subarea;

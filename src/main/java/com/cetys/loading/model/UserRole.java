@@ -21,7 +21,7 @@ public class UserRole extends BaseEntity {
     @Id
     @Column(name = "user_role_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long userRoleId;
+    Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

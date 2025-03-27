@@ -20,7 +20,7 @@ public class Subarea extends BaseEntity {
     @Id
     @Column(name = "subarea_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long subarea_id;
+    Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "area_id")

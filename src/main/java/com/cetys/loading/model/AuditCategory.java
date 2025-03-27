@@ -33,10 +33,10 @@ public class AuditCategory extends BaseEntity {
     @Id
     @Column(name = "audit_category_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long auditCategoryId;
+    Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "subarea_id")
+    @JoinColumn(name = "audit_id")
     Audit audit;
 
     @Column(name = "s_category")

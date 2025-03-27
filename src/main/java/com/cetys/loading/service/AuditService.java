@@ -44,7 +44,7 @@ public class AuditService {
         Audit a = auditRepository.save(audit);
         Subarea s = a.getSubarea();
 
-        List<BaseCategory> baseCategories = baseCategoryService.getAllBaseCategoriesBySubarea(s.getSubarea_id());
+        List<BaseCategory> baseCategories = baseCategoryService.getAllBaseCategoriesBySubarea(s.getId());
         List<AuditCategory> auditCategories = new ArrayList<>();
 
         for (BaseCategory baseCategory : baseCategories) {
@@ -57,7 +57,7 @@ public class AuditService {
 
         for (AuditCategory auditCategory : auditCategories) {
             List<BaseQuestion> baseQuestions = baseQuestionService
-                    .findAllByBaseCategoryId(auditCategory.getBaseCategory().getBaseCategoryId());
+                    .findAllByBaseCategoryId(auditCategory.getBaseCategory().getId());
 
             for (BaseQuestion baseQuestion : baseQuestions) {
                 auditQuestions.add(AuditQuestion.fromBaseQuestion(baseQuestion, auditCategory));

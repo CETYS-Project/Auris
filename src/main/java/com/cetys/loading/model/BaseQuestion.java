@@ -18,6 +18,9 @@ import lombok.Setter;
 @Setter
 public class BaseQuestion extends BaseEntity {
 
+    public BaseQuestion() {
+    }
+
     public BaseQuestion(String question, BaseCategory category) {
         this.question = question;
         this.baseCategory = category;
@@ -26,7 +29,7 @@ public class BaseQuestion extends BaseEntity {
     @Id
     @Column(name = "base_question_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long baseQuestionId;
+    Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "base_category_id")

@@ -18,7 +18,7 @@ public class Org extends BaseEntity {
     @Id
     @Column(name = "org_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long org_id;
+    Long id;
 
     @Column(name = "name")
     String name;

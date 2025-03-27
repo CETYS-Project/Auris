@@ -19,7 +19,7 @@ public class Area extends BaseEntity {
     @Id
     @Column(name = "area_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long areaId;
+    Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "org_id")

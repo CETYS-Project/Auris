@@ -1,15 +1,19 @@
 package com.cetys.loading.service;
 
-import com.cetys.loading.model.Area;
-import com.cetys.loading.repository.AreaRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.cetys.loading.model.Area;
+import com.cetys.loading.repository.AreaRepository;
+
+@Service
 public class AreaService {
     @Autowired
     AreaRepository areaRepository;
+
     public List<Area> getAreaList() {
         List<Area> areas = areaRepository.findAll();
         return areas;
