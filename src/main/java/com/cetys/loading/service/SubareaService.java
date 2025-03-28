@@ -1,7 +1,6 @@
 package com.cetys.loading.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,13 +24,8 @@ public class SubareaService {
     @Autowired
     private BaseQuestionRepository baseQuestionRepository;
 
-    public List<Subarea> getAllSubareas() {
-        return subareaRepository.findAll();
-    }
-
-    public Subarea getSubareaById(Long id) {
-        Optional<Subarea> subarea = subareaRepository.findById(id);
-        return subarea.orElse(null);
+    public List<Subarea> getAllSubareasByAreaId(Long areaId) {
+        return subareaRepository.findByAreaId(areaId);
     }
 
     public Subarea createSubarea(Subarea subarea) {
@@ -49,19 +43,4 @@ public class SubareaService {
         return s;
     }
 
-    public Subarea updateSubarea(Long id, Subarea subareaDetails) {
-        Optional<Subarea> subareaOptional = subareaRepository.findById(id);
-        if (subareaOptional.isPresent()) {
-            Subarea subarea = subareaOptional.get();
-            subarea.setArea(subareaDetails.getArea());
-            subarea.setName(subareaDetails.getName());
-            return subareaRepository.save(subarea);
-        } else {
-            return null;
-        }
-    }
-
-    public void deleteSubarea(Long id) {
-        subareaRepository.deleteById(id);
-    }
 }

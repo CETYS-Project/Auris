@@ -1,10 +1,13 @@
 package com.cetys.loading.controller;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,20 +28,23 @@ public class SubareaController {
     @Autowired
     private EntityManager entityManager;
 
-    @PostAuthorize("/")
-    public Subarea createSubarea(@RequestBody SubareaDto subareaDto) {
+    @PostMapping("/")
+    public ResponseEntity<SubareaDto> createSubarea(@RequestBody SubareaDto subareaDto) {
         Subarea subarea = new Subarea();
         subarea.setName(subareaDto.getName());
 
         Area area = entityManager.getReference(Area.class, subareaDto.getAreaId());
         subarea.setArea(area);
 
-        return subareaService.createSubarea(subarea);
+        Subarea createdSubarea = subareaService.createSubarea(subarea);
+        SubareaDto createdSubareaDto = new SubareaDto(createdSubarea);
+        return ResponseEntity.status(201).body(createdSubareaDto);
     }
 
-    @GetMapping("/")
-    public List<Subarea> getAllSubareas() {
-        return subareaService.getAllSubareas();
+    @GetMapping("/{areaId}")
+    public ResponseEntity<List<SubareaDto>> getAllSubareasByAreaId(@PathVariable("areaId") Long areaId) {
+        List<Subarea> subareas = subareaService.getAllSubareasByAreaId(areaId);
+        return ResponseEntity.ok(subareas.stream().map(SubareaDto::new).collect(Collectors.toList()));
     }
 
 }

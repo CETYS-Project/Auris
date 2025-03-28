@@ -7,6 +7,8 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.cetys.loading.dto.AuditCategoryDto;
+import com.cetys.loading.dto.AuditInfoDto;
 import com.cetys.loading.model.Audit;
 import com.cetys.loading.model.AuditCategory;
 import com.cetys.loading.model.AuditQuestion;
@@ -34,6 +36,9 @@ public class AuditService {
 
     @Autowired
     private AuditQuestionRepository auditQuestionRepository;
+
+    @Autowired
+    private AuditQuestionService auditQuestionService;
 
     public Audit getAuditById(Long id) {
         Optional<Audit> audit = auditRepository.findById(id);
@@ -70,6 +75,22 @@ public class AuditService {
 
     public List<Audit> getAuditsBySubarea(Long subareaId) {
         return auditRepository.findAllBySubareaId(subareaId);
+    }
+
+    public AuditInfoDto getAuditInfo(Long auditId) {
+        Audit audit = auditRepository.findById(auditId).orElse(null);
+        if (audit == null) {
+            throw new RuntimeException("Audit not found");
+        }
+        List<AuditCategory> auditCategories = auditCategoryRepository.findAllByAuditId(audit.getId());
+        List<AuditCategoryDto> auditCategoryDtos = new ArrayList<>();
+        for (AuditCategory auditCategory : auditCategories) {
+            List<AuditQuestion> auditQuestions = auditQuestionRepository
+                    .findAllByAuditCategoryId(auditCategory.getId());
+            auditCategoryDtos.add(new AuditCategoryDto(auditCategory, auditQuestions));
+        }
+
+        return new AuditInfoDto(audit, auditCategoryDtos);
     }
 
 }
