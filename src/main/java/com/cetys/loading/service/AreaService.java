@@ -19,6 +19,11 @@ public class AreaService {
         return areas;
     }
 
+    public List<Area> getAreaListByOrgId(Long orgId) {
+        List<Area> areas = areaRepository.findByOrgId(orgId);
+        return areas;
+    }
+
     public Area getAreaById(Long id) {
         Optional<Area> area = areaRepository.findById(id);
         return area.orElse(null);
