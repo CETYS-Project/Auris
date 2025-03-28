@@ -1,10 +1,14 @@
 package com.cetys.loading.controller;
 
-import com.cetys.loading.model.User;
-import com.cetys.loading.repository.UserRepository;
-import com.cetys.loading.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.cetys.loading.model.User;
+import com.cetys.loading.service.UserService;
 
 @RestController
 @RequestMapping("/user")
@@ -31,6 +35,5 @@ public class UserController {
     public User updateUser(Long id, User userDetails) {
         return userService.updateUser(id, userDetails);
     }
-
 
 }
