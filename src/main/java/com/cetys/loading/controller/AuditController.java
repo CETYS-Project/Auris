@@ -3,6 +3,8 @@ package com.cetys.loading.controller;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.cetys.loading.dto.AuditDto;
+import com.cetys.loading.dto.responses.AuditDtoResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,9 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.cetys.loading.dto.AuditDto;
 import com.cetys.loading.dto.AuditInfoDto;
-import com.cetys.loading.dto.AuditResponseDto;
 import com.cetys.loading.model.Audit;
 import com.cetys.loading.model.AuditQuestion;
 import com.cetys.loading.model.Subarea;
@@ -40,16 +40,16 @@ public class AuditController {
     EntityManager entityManager;
 
     @PostMapping("/")
-    public ResponseEntity<AuditResponseDto> createAudit(@RequestBody AuditDto auditDto) {
+    public ResponseEntity<AuditDtoResponse> createAudit(@RequestBody AuditDto auditDto) {
         Audit audit = new Audit();
         audit.setSubarea(entityManager.getReference(Subarea.class, auditDto.getSubareaId()));
         Audit createdAudit = auditService.createAudit(audit);
-        return ResponseEntity.status(201).body(new AuditResponseDto(createdAudit));
+        return ResponseEntity.status(201).body(new AuditDtoResponse(createdAudit));
     }
 
     @GetMapping("/{subareaId}")
-    public ResponseEntity<List<AuditResponseDto>> getAuditsBySubarea(@PathVariable("subareaId") Long subareaId) {
-        return ResponseEntity.ok(auditService.getAuditsBySubarea(subareaId).stream().map(AuditResponseDto::new)
+    public ResponseEntity<List<AuditDtoResponse>> getAuditsBySubarea(@PathVariable("subareaId") Long subareaId) {
+        return ResponseEntity.ok(auditService.getAuditsBySubarea(subareaId).stream().map(AuditDtoResponse::new)
                 .collect(Collectors.toList()));
     }
 

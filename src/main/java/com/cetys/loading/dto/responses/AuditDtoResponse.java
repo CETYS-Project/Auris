@@ -1,4 +1,4 @@
-package com.cetys.loading.dto;
+package com.cetys.loading.dto.responses;
 
 import com.cetys.loading.model.Audit;
 
@@ -9,10 +9,10 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class AuditResponseDto {
+public class AuditDtoResponse {
     private Long id;
 
-    public AuditResponseDto(Audit audit) {
+    public AuditDtoResponse(Audit audit) {
         this.id = audit.getId();
     }
 }
