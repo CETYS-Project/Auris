@@ -1,5 +1,8 @@
 package com.cetys.loading.service;
 
+import com.cetys.loading.dto.request.UserDtoRequest;
+import com.cetys.loading.dto.response.UserDtoResponse;
+import com.cetys.loading.mapper.UserMapper;
 import com.cetys.loading.model.Subarea;
 import com.cetys.loading.model.User;
 import com.cetys.loading.repository.UserRepository;
@@ -15,26 +18,34 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    @Autowired
+    private UserMapper userMapper;
+
+    public List<UserDtoResponse> getAllUsers() {
+        List<User> users = userRepository.findAll();
+        return userMapper.toUserDtoResponseList(users);
     }
 
-    public User getUserById(Long id) {
+    public UserDtoResponse getUserById(Long id) {
         Optional<User> user = userRepository.findById(id);
-        return user.orElse(null);
+        return userMapper.toUserDtoResponse(user.orElse(null));
     }
 
-    public User createUser(User user) {
-        return userRepository.save(user);
+    public UserDtoResponse createUser(UserDtoRequest user) {
+        User newUser = userMapper.requestToUser(user);
+        userRepository.save(newUser);
+        return userMapper.toUserDtoResponse(newUser);
     }
 
-    public User updateUser(Long id, User userDetails) {
+    public UserDtoResponse updateUser(Long id, UserDtoRequest userDetails) {
         Optional<User> userOptional = userRepository.findById(id);
+
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             user.setName(userDetails.getName());
             user.setEmail(userDetails.getEmail());
-            return userRepository.save(user);
+            userRepository.save(user);
+            return userMapper.toUserDtoResponse(user);
         } else {
             return null;
         }

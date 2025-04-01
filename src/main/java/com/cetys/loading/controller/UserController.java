@@ -1,5 +1,7 @@
 package com.cetys.loading.controller;
 
+import com.cetys.loading.dto.request.UserDtoRequest;
+import com.cetys.loading.dto.response.UserDtoResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,17 +24,17 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public User getUserById(Long id) {
+    public UserDtoResponse getUserById(Long id) {
         return userService.getUserById(id);
     }
 
     @PostMapping("/")
-    public User createUser(User user) {
-        return userService.createUser(user);
+    public UserDtoResponse createUser(UserDtoRequest userRequest) {
+        return userService.createUser(userRequest);
     }
 
     @PutMapping("/{id}")
-    public User updateUser(Long id, User userDetails) {
+    public UserDtoResponse updateUser(Long id, UserDtoRequest userDetails) {
         return userService.updateUser(id, userDetails);
     }
 
