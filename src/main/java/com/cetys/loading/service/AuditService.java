@@ -2,13 +2,13 @@ package com.cetys.loading.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.cetys.loading.dto.AuditCategoryDto;
 import com.cetys.loading.dto.AuditInfoDto;
+import com.cetys.loading.dto.request.AuditCreateDtoRequest;
+import com.cetys.loading.mapper.AuditMapper;
 import com.cetys.loading.model.Audit;
 import com.cetys.loading.model.AuditCategory;
 import com.cetys.loading.model.AuditQuestion;
@@ -18,38 +18,32 @@ import com.cetys.loading.model.Subarea;
 import com.cetys.loading.repository.AuditCategoryRepository;
 import com.cetys.loading.repository.AuditQuestionRepository;
 import com.cetys.loading.repository.AuditRepository;
+import com.cetys.loading.repository.SubareaRepository;
+
+import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class AuditService {
 
-    @Autowired
-    private AuditRepository auditRepository;
+    private final AuditRepository auditRepository;
+    private final BaseCategoryService baseCategoryService;
+    private final AuditCategoryRepository auditCategoryRepository;
+    private final BaseQuestionService baseQuestionService;
+    private final AuditQuestionRepository auditQuestionRepository;
+    private final SubareaRepository subareaRepository;
+    private final AuditMapper auditMapper;
 
-    @Autowired
-    private BaseCategoryService baseCategoryService;
+    public Audit createAudit(Long subareaId, AuditCreateDtoRequest auditCreateDtoRequest) {
+        Subarea subarea = subareaRepository.findById(subareaId)
+                .orElseThrow(() -> new EntityNotFoundException("La subárea no existe"));
 
-    @Autowired
-    private AuditCategoryRepository auditCategoryRepository;
+        Audit audit = auditMapper.toEntity(auditCreateDtoRequest);
+        subarea.addAudit(audit);
+        auditRepository.save(audit);
 
-    @Autowired
-    private BaseQuestionService baseQuestionService;
-
-    @Autowired
-    private AuditQuestionRepository auditQuestionRepository;
-
-    @Autowired
-    private AuditQuestionService auditQuestionService;
-
-    public Audit getAuditById(Long id) {
-        Optional<Audit> audit = auditRepository.findById(id);
-        return audit.orElse(null);
-    }
-
-    public Audit createAudit(Audit audit) {
-        Audit a = auditRepository.save(audit);
-        Subarea s = a.getSubarea();
-
-        List<BaseCategory> baseCategories = baseCategoryService.getAllBaseCategoriesBySubarea(s.getId());
+        List<BaseCategory> baseCategories = subarea.getBaseCategories();
         List<AuditCategory> auditCategories = new ArrayList<>();
 
         for (BaseCategory baseCategory : baseCategories) {

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.cetys.loading.dto.AreaDto;
+import com.cetys.loading.dto.response.AreaDtoResponse;
 import com.cetys.loading.model.Area;
 import com.cetys.loading.model.Org;
 import com.cetys.loading.service.AreaService;
@@ -29,19 +29,19 @@ public class AreaController {
     private EntityManager entityManager;
 
     @GetMapping("/{orgId}")
-    public ResponseEntity<List<AreaDto>> getAreaListByOrgId(@PathVariable("orgId") Long orgId) {
+    public ResponseEntity<List<AreaDtoResponse>> getAreaListByOrgId(@PathVariable("orgId") Long orgId) {
         List<Area> areas = areaService.getAreaListByOrgId(orgId);
-        return ResponseEntity.ok(areas.stream().map(AreaDto::new).collect(Collectors.toList()));
+        return ResponseEntity.ok(areas.stream().map(AreaDtoResponse::new).collect(Collectors.toList()));
     }
 
     @PostMapping
-    public ResponseEntity<AreaDto> createArea(@RequestBody AreaDto areaDto) {
+    public ResponseEntity<AreaDtoResponse> createArea(@RequestBody AreaDtoResponse areaDto) {
         Area area = new Area();
         area.setName(areaDto.getName());
         area.setOrg(entityManager.getReference(Org.class, areaDto.getOrgId()));
 
         Area createdArea = areaService.createArea(area);
-        AreaDto createdAreaDto = new AreaDto(createdArea);
+        AreaDtoResponse createdAreaDto = new AreaDtoResponse(createdArea);
         return ResponseEntity.status(201).body(createdAreaDto);
     }
 }

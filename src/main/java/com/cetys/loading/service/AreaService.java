@@ -1,47 +1,42 @@
 package com.cetys.loading.service;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.cetys.loading.dto.request.AreaCreateDtoRequest;
+import com.cetys.loading.dto.response.AreaDtoResponse;
+import com.cetys.loading.mapper.AreaMapper;
 import com.cetys.loading.model.Area;
+import com.cetys.loading.model.Org;
 import com.cetys.loading.repository.AreaRepository;
+import com.cetys.loading.repository.OrgRepository;
+
+import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class AreaService {
-    @Autowired
-    AreaRepository areaRepository;
+    private final AreaRepository areaRepository;
+    private final OrgRepository orgRepository;
+    private final AreaMapper areaMapper;
 
-    public List<Area> getAreaList() {
-        List<Area> areas = areaRepository.findAll();
-        return areas;
+    public AreaDtoResponse createArea(Long orgId, AreaCreateDtoRequest areaCreateDtoRequest) {
+        Org org = orgRepository.findById(orgId)
+                .orElseThrow(() -> new EntityNotFoundException("Organización no encontrada"));
+        Area area = areaMapper.toEntity(areaCreateDtoRequest);
+
+        org.addArea(area);
+        area = areaRepository.save(area);
+
+        return areaMapper.toDto(area);
     }
 
-    public List<Area> getAreaListByOrgId(Long orgId) {
-        List<Area> areas = areaRepository.findByOrgId(orgId);
-        return areas;
-    }
-
-    public Area getAreaById(Long id) {
-        Optional<Area> area = areaRepository.findById(id);
-        return area.orElse(null);
-    }
-
-    public Area createArea(Area area) {
-        return areaRepository.save(area);
-    }
-
-    public Area updateArea(Long id, Area areaDetails) {
-        Optional<Area> areaOptional = areaRepository.findById(id);
-        if (areaOptional.isPresent()) {
-            Area area = areaOptional.get();
-            area.setName(areaDetails.getName());
-            area.setOrg(areaDetails.getOrg());
-            return areaRepository.save(area);
-        } else {
-            return null;
-        }
+    public List<AreaDtoResponse> getAreas(Long orgId) {
+        Org org = orgRepository.findById(orgId)
+                .orElseThrow(() -> new EntityNotFoundException("Organización no encontrada"));
+        return org.getAreas().stream().map(areaMapper::toDto).collect(Collectors.toList());
     }
 }

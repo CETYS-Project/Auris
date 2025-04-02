@@ -1,44 +1,35 @@
 package com.cetys.loading.service;
 
-import com.cetys.loading.model.Org;
-import com.cetys.loading.repository.OrgRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import com.cetys.loading.dto.request.OrgCreateDtoRequest;
+import com.cetys.loading.dto.response.OrgDtoResponse;
+import com.cetys.loading.mapper.OrgMapper;
+import com.cetys.loading.model.Org;
+import com.cetys.loading.repository.OrgRepository;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class OrgService {
 
-    @Autowired
-    private OrgRepository orgRepository;
+    private final OrgRepository orgRepository;
+    private final OrgMapper orgMapper;
 
-    public List<Org> getAllOrgs() {
-        return orgRepository.findAll();
+    public List<OrgDtoResponse> getAllOrgs() {
+        return orgRepository.findAll().stream()
+                .map(orgMapper::toDto)
+                .collect(Collectors.toList());
     }
 
-    public Org getOrgById(Long id) {
-        Optional<Org> org = orgRepository.findById(id);
-        return org.orElse(null);
+    public OrgDtoResponse createOrg(OrgCreateDtoRequest orgCreateDtoRequest) {
+        Org org = orgMapper.toEntity(orgCreateDtoRequest);
+        org = orgRepository.save(org);
+        return orgMapper.toDto(org);
     }
 
-    public Org createOrg(Org org) {
-        return orgRepository.save(org);
-    }
-
-    public Org updateOrg(Long id, Org orgDetails) {
-        Optional<Org> orgOptional = orgRepository.findById(id);
-        if (orgOptional.isPresent()) {
-            Org org = orgOptional.get();
-            org.setName(orgDetails.getName());
-            return orgRepository.save(org);
-        } else {
-            return null;
-        }
-    }
-
-    public void deleteOrg(Long id) {
-        orgRepository.deleteById(id);
-    }
 }

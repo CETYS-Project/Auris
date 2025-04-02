@@ -1,46 +1,53 @@
 package com.cetys.loading.model;
 
+import java.util.List;
+
 import com.cetys.loading.enums.SCategory;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "base_category")
 @Getter
 @Setter
+@Builder
+@Table(name = "base_category")
 public class BaseCategory extends BaseEntity {
-
-    public BaseCategory() {
-    }
-
-    public BaseCategory(String name, String description, SCategory category) {
-        this.name = name;
-        this.description = description;
-        this.sCategory = category;
-    }
 
     @Id
     @Column(name = "base_category_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "subarea_id")
     Subarea subarea;
 
     @Column(name = "s_category")
+    @Enumerated(EnumType.STRING)
     SCategory sCategory;
 
-    @Column(name = "name")
     String name;
 
-    @Column(name = "description")
     String description;
+
+    @OneToMany(mappedBy = "baseCategory", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    List<BaseQuestion> baseQuestions;
+
+    @OneToMany(mappedBy = "baseCategory", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    List<AuditCategory> auditCategories;
 }

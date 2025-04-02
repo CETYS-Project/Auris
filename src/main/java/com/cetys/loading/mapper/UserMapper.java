@@ -1,12 +1,13 @@
 package com.cetys.loading.mapper;
 
-import com.cetys.loading.dto.request.UserDtoRequest;
-import com.cetys.loading.dto.response.UserDtoResponse;
-import com.cetys.loading.model.User;
+import java.util.List;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
-import java.util.List;
+import com.cetys.loading.dto.request.UserDtoRequest;
+import com.cetys.loading.dto.response.UserDtoResponse;
+import com.cetys.loading.model.User;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
