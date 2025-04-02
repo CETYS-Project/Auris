@@ -7,7 +7,11 @@ spring:
     password: loading
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
+
+server:
+  error:
+    include-stacktrace: never
 
 management:
   endpoints:

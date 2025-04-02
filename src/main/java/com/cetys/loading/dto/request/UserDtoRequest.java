@@ -1,10 +1,14 @@
 package com.cetys.loading.dto.request;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Getter
-@Setter
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class UserDtoRequest {
     private String name;
     private String email;

@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.cetys.loading.dto.request.AuditCreateDtoRequest;
 import com.cetys.loading.dto.response.AuditDtoResponse;
@@ -20,7 +22,6 @@ import com.cetys.loading.repository.AuditQuestionRepository;
 import com.cetys.loading.repository.AuditRepository;
 import com.cetys.loading.repository.SubareaRepository;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -35,7 +36,7 @@ public class AuditService {
 
     public AuditDtoResponse createAudit(Long subareaId, AuditCreateDtoRequest auditCreateDtoRequest) {
         Subarea subarea = subareaRepository.findById(subareaId)
-                .orElseThrow(() -> new EntityNotFoundException("La subárea no existe"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "La subárea no existe"));
 
         Audit audit = auditMapper.toEntity(auditCreateDtoRequest);
         subarea.addAudit(audit);
@@ -67,7 +68,7 @@ public class AuditService {
 
     public List<AuditDtoResponse> getAuditsBySubareaId(Long subareaId) {
         Subarea subarea = subareaRepository.findById(subareaId)
-                .orElseThrow(() -> new EntityNotFoundException("La subárea no existe"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "La subárea no existe"));
 
         return subarea.getAudits().stream().map(auditMapper::toDto).collect(Collectors.toList());
     }

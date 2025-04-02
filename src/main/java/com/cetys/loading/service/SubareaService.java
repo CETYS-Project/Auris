@@ -3,7 +3,9 @@ package com.cetys.loading.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.cetys.loading.dto.request.SubareaCreateDtoRequest;
 import com.cetys.loading.dto.response.SubareaDtoResponse;
@@ -16,7 +18,6 @@ import com.cetys.loading.repository.AreaRepository;
 import com.cetys.loading.repository.BaseQuestionRepository;
 import com.cetys.loading.repository.SubareaRepository;
 
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
@@ -36,7 +37,7 @@ public class SubareaService {
     @Transactional
     public SubareaDtoResponse createSubarea(Long orgId, Long areaId, SubareaCreateDtoRequest subareaCreateDtoRequest) {
         Area area = areaRepository.findById(areaId)
-                .orElseThrow(() -> new EntityNotFoundException("No se encontró la área"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No se encontró la área"));
 
         Subarea subarea = Subarea.builder()
                 .name(subareaCreateDtoRequest.getName())
@@ -57,7 +58,7 @@ public class SubareaService {
 
     public List<SubareaDtoResponse> getSubareas(Long areaId) {
         Area area = areaRepository.findById(areaId)
-                .orElseThrow(() -> new EntityNotFoundException("No se encontró la área"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No se encontró la área"));
         return area.getSubareas().stream()
                 .map(subareaMapper::toDto)
                 .collect(Collectors.toList());
