@@ -11,6 +11,7 @@ import com.cetys.loading.mapper.OrgMapper;
 import com.cetys.loading.model.Org;
 import com.cetys.loading.repository.OrgRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -26,6 +27,7 @@ public class OrgService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public OrgDtoResponse createOrg(OrgCreateDtoRequest orgCreateDtoRequest) {
         Org org = orgMapper.toEntity(orgCreateDtoRequest);
         org = orgRepository.save(org);

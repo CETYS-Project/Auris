@@ -1,5 +1,6 @@
 package com.cetys.loading.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
@@ -38,5 +39,6 @@ public class Audit extends BaseEntity {
     Subarea subarea;
 
     @OneToMany(mappedBy = "audit", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    List<AuditCategory> auditCategories;
+    @Builder.Default
+    List<AuditCategory> auditCategories = new ArrayList<>();
 }

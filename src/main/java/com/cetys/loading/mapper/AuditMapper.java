@@ -7,6 +7,8 @@ import com.cetys.loading.dto.request.AuditCreateDtoRequest;
 import com.cetys.loading.dto.response.AuditCategoryDtoResponse;
 import com.cetys.loading.dto.response.AuditDtoResponse;
 import com.cetys.loading.dto.response.AuditQuestionDtoResponse;
+import com.cetys.loading.dto.response.BaseCategoryDtoResponse;
+import com.cetys.loading.dto.response.BaseQuestionDtoResponse;
 import com.cetys.loading.model.Audit;
 import com.cetys.loading.model.AuditCategory;
 import com.cetys.loading.model.AuditQuestion;
@@ -38,5 +40,9 @@ public interface AuditMapper {
     AuditCategoryDtoResponse toDto(AuditCategory auditCategory);
 
     AuditQuestionDtoResponse toDto(AuditQuestion auditQuestion);
+
+    BaseCategoryDtoResponse toDto(BaseCategory baseCategory);
+
+    BaseQuestionDtoResponse toDto(BaseQuestion baseQuestion);
 
 }

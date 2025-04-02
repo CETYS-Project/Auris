@@ -1,5 +1,6 @@
 package com.cetys.loading.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.cetys.loading.enums.SCategory;
@@ -47,8 +48,10 @@ public class BaseCategory extends BaseEntity {
     String description;
 
     @OneToMany(mappedBy = "baseCategory", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    List<BaseQuestion> baseQuestions;
+    @Builder.Default
+    List<BaseQuestion> baseQuestions = new ArrayList<>();
 
     @OneToMany(mappedBy = "baseCategory", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    List<AuditCategory> auditCategories;
+    @Builder.Default
+    List<AuditCategory> auditCategories = new ArrayList<>();
 }

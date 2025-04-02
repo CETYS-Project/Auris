@@ -1,5 +1,6 @@
 package com.cetys.loading.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
@@ -35,7 +36,8 @@ public class Org extends BaseEntity {
     String name;
 
     @OneToMany(mappedBy = "org", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    List<Area> areas;
+    @Builder.Default
+    List<Area> areas = new ArrayList<>();
 
     public void addArea(Area area) {
         areas.add(area);

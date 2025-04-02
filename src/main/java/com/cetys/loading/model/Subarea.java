@@ -1,5 +1,6 @@
 package com.cetys.loading.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
@@ -40,10 +41,12 @@ public class Subarea extends BaseEntity {
     String name;
 
     @OneToMany(mappedBy = "subarea", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    List<BaseCategory> baseCategories;
+    @Builder.Default
+    List<BaseCategory> baseCategories = new ArrayList<>();
 
     @OneToMany(mappedBy = "subarea", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    List<Audit> audits;
+    @Builder.Default
+    List<Audit> audits = new ArrayList<>();
 
     public void addBaseCategory(BaseCategory baseCategory) {
         baseCategories.add(baseCategory);

@@ -1,5 +1,6 @@
 package com.cetys.loading.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
@@ -40,5 +41,6 @@ public class BaseQuestion extends BaseEntity {
     String question;
 
     @OneToMany(mappedBy = "baseQuestion", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    List<AuditQuestion> auditQuestions;
+    @Builder.Default
+    List<AuditQuestion> auditQuestions = new ArrayList<>();
 }

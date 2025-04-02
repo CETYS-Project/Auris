@@ -15,6 +15,7 @@ import com.cetys.loading.model.Org;
 import com.cetys.loading.repository.AreaRepository;
 import com.cetys.loading.repository.OrgRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -24,6 +25,7 @@ public class AreaService {
     private final OrgRepository orgRepository;
     private final AreaMapper areaMapper;
 
+    @Transactional
     public AreaDtoResponse createArea(Long orgId, AreaCreateDtoRequest areaCreateDtoRequest) {
         Org org = orgRepository.findById(orgId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Organización no encontrada"));

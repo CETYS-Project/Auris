@@ -39,9 +39,7 @@ public class SubareaService {
         Area area = areaRepository.findById(areaId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No se encontró la área"));
 
-        Subarea subarea = Subarea.builder()
-                .name(subareaCreateDtoRequest.getName())
-                .build();
+        Subarea subarea = subareaMapper.toEntity(subareaCreateDtoRequest);
         area.addSubarea(subarea);
 
         List<BaseCategory> baseCategories = BaseCategoryService.getDefaultBaseCategories();

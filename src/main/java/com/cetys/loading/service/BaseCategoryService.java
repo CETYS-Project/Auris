@@ -2,14 +2,39 @@ package com.cetys.loading.service;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
+import com.cetys.loading.dto.response.BaseCategoryDtoResponse;
 import com.cetys.loading.enums.SCategory;
+import com.cetys.loading.mapper.AuditMapper;
 import com.cetys.loading.model.BaseCategory;
+import com.cetys.loading.model.Subarea;
+import com.cetys.loading.repository.SubareaRepository;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class BaseCategoryService {
+
+        private final SubareaRepository subareaRepository;
+        private final AuditMapper auditMapper;
+
+        public List<BaseCategoryDtoResponse> getAllBaseCategories(Long subareaId) {
+                Subarea subarea = subareaRepository.findById(subareaId)
+                                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                                                "No se encontró la subárea"));
+
+                List<BaseCategory> baseCategories = subarea.getBaseCategories();
+
+                return baseCategories.stream()
+                                .map(auditMapper::toDto)
+                                .collect(Collectors.toList());
+        }
 
         public static List<BaseCategory> getDefaultBaseCategories() {
                 // Categorias S1 (1-5)

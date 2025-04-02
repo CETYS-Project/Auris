@@ -22,6 +22,7 @@ import com.cetys.loading.repository.AuditQuestionRepository;
 import com.cetys.loading.repository.AuditRepository;
 import com.cetys.loading.repository.SubareaRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -34,6 +35,7 @@ public class AuditService {
     private final SubareaRepository subareaRepository;
     private final AuditMapper auditMapper;
 
+    @Transactional
     public AuditDtoResponse createAudit(Long subareaId, AuditCreateDtoRequest auditCreateDtoRequest) {
         Subarea subarea = subareaRepository.findById(subareaId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "La subárea no existe"));

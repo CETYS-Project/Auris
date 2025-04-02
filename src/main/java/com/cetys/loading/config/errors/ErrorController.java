@@ -11,7 +11,10 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import io.swagger.v3.oas.annotations.Hidden;
+
 @Order(Ordered.HIGHEST_PRECEDENCE)
+@Hidden
 @ControllerAdvice
 public class ErrorController extends ResponseEntityExceptionHandler {
 
