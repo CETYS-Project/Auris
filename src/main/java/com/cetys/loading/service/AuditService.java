@@ -8,7 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.cetys.loading.dto.request.AuditCreateDtoRequest;
 import com.cetys.loading.dto.response.AuditDtoResponse;
 import com.cetys.loading.mapper.AuditMapper;
 import com.cetys.loading.model.Audit;
@@ -36,11 +35,11 @@ public class AuditService {
     private final AuditMapper auditMapper;
 
     @Transactional
-    public AuditDtoResponse createAudit(Long subareaId, AuditCreateDtoRequest auditCreateDtoRequest) {
+    public void createAudit(Long subareaId) {
         Subarea subarea = subareaRepository.findById(subareaId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "La subárea no existe"));
 
-        Audit audit = auditMapper.toEntity(auditCreateDtoRequest);
+        Audit audit = Audit.builder().build();
         subarea.addAudit(audit);
         auditRepository.save(audit);
 
@@ -48,7 +47,7 @@ public class AuditService {
         List<AuditCategory> auditCategories = new ArrayList<>();
 
         for (BaseCategory baseCategory : baseCategories) {
-            auditCategories.add(auditMapper.toAuditCategory(baseCategory, audit));
+            auditCategories.add(auditMapper.toAuditCategory(baseCategory, audit, baseCategory.getSCategory()));
         }
 
         auditCategoryRepository.saveAll(auditCategories);
@@ -64,8 +63,6 @@ public class AuditService {
             }
         }
         auditQuestionRepository.saveAll(auditQuestions);
-
-        return auditMapper.toDto(audit);
     }
 
     public List<AuditDtoResponse> getAuditsBySubareaId(Long subareaId) {

@@ -6,11 +6,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.cetys.loading.dto.request.AuditCreateDtoRequest;
 import com.cetys.loading.dto.response.AuditDtoResponse;
 import com.cetys.loading.service.AuditService;
 
@@ -24,10 +22,10 @@ public class AuditController {
     private final AuditService auditService;
 
     @PostMapping("/subarea/{subareaId}")
-    public ResponseEntity<AuditDtoResponse> createAudit(
-            @PathVariable("subareaId") Long subareaId,
-            @RequestBody AuditCreateDtoRequest auditCreateDtoRequest) {
-        return ResponseEntity.status(201).body(auditService.createAudit(subareaId, auditCreateDtoRequest));
+    public ResponseEntity<Void> createAudit(
+            @PathVariable("subareaId") Long subareaId) {
+        auditService.createAudit(subareaId);
+        return ResponseEntity.status(201).build();
     }
 
     @GetMapping("/subarea/{subareaId}")
