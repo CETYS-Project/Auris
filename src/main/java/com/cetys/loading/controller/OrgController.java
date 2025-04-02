@@ -32,20 +32,20 @@ public class OrgController {
     private final AreaService areaService;
     private final SubareaService subareaService;
 
+    @PostMapping("/")
+    public ResponseEntity<OrgDtoResponse> createOrg(@Valid @RequestBody OrgCreateDtoRequest orgCreateDtoRequest) {
+        return ResponseEntity.status(201).body(orgService.createOrg(orgCreateDtoRequest));
+    }
+
     @GetMapping("/")
     public ResponseEntity<List<OrgDtoResponse>> getAllOrgs() {
         return ResponseEntity.ok(orgService.getAllOrgs());
     }
 
-    @PostMapping("/")
-    public ResponseEntity<OrgDtoResponse> createOrg(@Valid @RequestBody OrgCreateDtoRequest orgCreateDtoRequest) {
-        return ResponseEntity.ok(orgService.createOrg(orgCreateDtoRequest));
-    }
-
     @PostMapping("/{orgId}/area")
     public ResponseEntity<AreaDtoResponse> createArea(@PathVariable("orgId") Long orgId,
             @Valid @RequestBody AreaCreateDtoRequest areaCreateDtoRequest) {
-        return ResponseEntity.ok(areaService.createArea(orgId, areaCreateDtoRequest));
+        return ResponseEntity.status(201).body(areaService.createArea(orgId, areaCreateDtoRequest));
     }
 
     @GetMapping("/{orgId}/area")
@@ -56,7 +56,7 @@ public class OrgController {
     @PostMapping("/{orgId}/area/{areaId}/subarea")
     public ResponseEntity<SubareaDtoResponse> createSubarea(@PathVariable("orgId") Long orgId,
             @PathVariable("areaId") Long areaId, @Valid @RequestBody SubareaCreateDtoRequest subareaCreateDtoRequest) {
-        return ResponseEntity.ok(subareaService.createSubarea(orgId, areaId, subareaCreateDtoRequest));
+        return ResponseEntity.status(201).body(subareaService.createSubarea(orgId, areaId, subareaCreateDtoRequest));
     }
 
     @GetMapping("/{orgId}/area/{areaId}/subarea")

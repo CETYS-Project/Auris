@@ -1,16 +1,16 @@
 package com.cetys.loading.service;
 
-import com.cetys.loading.dto.request.UserDtoRequest;
-import com.cetys.loading.dto.response.UserDtoResponse;
-import com.cetys.loading.mapper.UserMapper;
-import com.cetys.loading.model.Subarea;
-import com.cetys.loading.model.User;
-import com.cetys.loading.repository.UserRepository;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import com.cetys.loading.dto.request.UserDtoRequest;
+import com.cetys.loading.dto.response.UserDtoResponse;
+import com.cetys.loading.mapper.UserMapper;
+import com.cetys.loading.model.User;
+import com.cetys.loading.repository.UserRepository;
 
 @Service
 public class UserService {

@@ -2,55 +2,14 @@ package com.cetys.loading.service;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.cetys.loading.enums.SCategory;
 import com.cetys.loading.model.BaseCategory;
-import com.cetys.loading.repository.BaseCategoryRepository;
 
 @Service
 public class BaseCategoryService {
-
-        @Autowired
-        private BaseCategoryRepository baseCategoryRepository;
-
-        public List<BaseCategory> getAllBaseCategories() {
-                return baseCategoryRepository.findAll();
-        }
-
-        public List<BaseCategory> getAllBaseCategoriesBySubarea(Long subareaId) {
-                return baseCategoryRepository.findAllBySubareaId(subareaId);
-        }
-
-        public BaseCategory getBaseCategoryById(Long id) {
-                Optional<BaseCategory> baseCategory = baseCategoryRepository.findById(id);
-                return baseCategory.orElse(null);
-        }
-
-        public BaseCategory createBaseCategory(BaseCategory baseCategory) {
-                return baseCategoryRepository.save(baseCategory);
-        }
-
-        public BaseCategory updateBaseCategory(Long id, BaseCategory baseCategoryDetails) {
-                Optional<BaseCategory> baseCategoryOptional = baseCategoryRepository.findById(id);
-                if (baseCategoryOptional.isPresent()) {
-                        BaseCategory baseCategory = baseCategoryOptional.get();
-                        baseCategory.setSubarea(baseCategoryDetails.getSubarea());
-                        baseCategory.setSCategory(baseCategoryDetails.getSCategory());
-                        baseCategory.setName(baseCategoryDetails.getName());
-                        baseCategory.setDescription(baseCategoryDetails.getDescription());
-                        return baseCategoryRepository.save(baseCategory);
-                } else {
-                        return null;
-                }
-        }
-
-        public void deleteBaseCategory(Long id) {
-                baseCategoryRepository.deleteById(id);
-        }
 
         public static List<BaseCategory> getDefaultBaseCategories() {
                 // Categorias S1 (1-5)
