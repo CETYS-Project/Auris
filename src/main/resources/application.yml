@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: loading
+  datasource:
+    url: jdbc:postgresql://localhost:5432/loading
+    username: loading
+    password: loading
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+  info:
+    env:
+      enabled: true 
