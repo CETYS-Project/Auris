@@ -3,6 +3,8 @@ package com.cetys.loading.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import com.cetys.loading.dto.request.AnswerDtoRequest;
+import com.cetys.loading.dto.response.AuditAnswerDtoResponse;
 import com.cetys.loading.dto.response.AuditCategoryDtoResponse;
 import com.cetys.loading.dto.response.AuditDtoResponse;
 import com.cetys.loading.dto.response.AuditQuestionDtoResponse;
@@ -10,6 +12,7 @@ import com.cetys.loading.dto.response.BaseCategoryDtoResponse;
 import com.cetys.loading.dto.response.BaseQuestionDtoResponse;
 import com.cetys.loading.enums.SCategory;
 import com.cetys.loading.model.Audit;
+import com.cetys.loading.model.AuditAnswer;
 import com.cetys.loading.model.AuditCategory;
 import com.cetys.loading.model.AuditQuestion;
 import com.cetys.loading.model.BaseCategory;
@@ -39,5 +42,11 @@ public interface AuditMapper {
     BaseCategoryDtoResponse toDto(BaseCategory baseCategory);
 
     BaseQuestionDtoResponse toDto(BaseQuestion baseQuestion);
+
+    AuditAnswerDtoResponse toDto(AuditAnswer auditAnswer);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "auditQuestion", ignore = true)
+    AuditAnswer toEntity(AnswerDtoRequest answerDtoRequest);
 
 }

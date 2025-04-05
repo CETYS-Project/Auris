@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AuditQuestionDtoResponse {
-    private Long id;
-    private String question;
-    private AuditAnswerDtoResponse auditAnswer;
+public class AuditAnswerDtoResponse {
+    private int score;
+    private String notes;
+    private String imageUrl;
 }

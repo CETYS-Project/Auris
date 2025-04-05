@@ -12,8 +12,6 @@ public interface OrgMapper {
 
     OrgDtoResponse toDto(Org org);
 
-    Org toEntity(OrgDtoResponse orgDto);
-
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "areas", ignore = true)
     Org toEntity(OrgCreateDtoRequest orgCreateDtoRequest);

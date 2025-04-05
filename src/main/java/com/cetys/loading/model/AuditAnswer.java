@@ -2,23 +2,26 @@ package com.cetys.loading.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "audit_answer")
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "audit_answer")
 public class AuditAnswer extends BaseEntity {
 
     @Id
@@ -26,17 +29,14 @@ public class AuditAnswer extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @ManyToOne()
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "audit_question_id")
     AuditQuestion auditQuestion;
 
-    @Column(name = "score")
     int score;
 
-    @Column(name = "notes")
     String notes;
 
-    @Column(name = "image_url")
     String imageUrl;
 
 }
