@@ -2,12 +2,16 @@ spring:
   application:
     name: loading
   datasource:
-    url: jdbc:postgresql://localhost:5432/loading
-    username: loading
-    password: loading
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:loading}
+    username: ${DB_USER:loading}
+    password: ${DB_PASSWORD:loading}
   jpa:
     hibernate:
       ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
 
 server:
   error:
