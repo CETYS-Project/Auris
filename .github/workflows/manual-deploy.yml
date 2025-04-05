@@ -1,0 +1,59 @@
+name: Manual Deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      ECR_REPO_NAME: ${{ secrets.ECR_REPO_NAME }}
+      ECR_REPO_URL: ${{ secrets.ECR_REPO_URL }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          
+      - name: Build Spring Boot application
+        run: ./gradlew build
+        
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-region: us-west-1
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          
+      - name: Login to Amazon ECR
+        id: login-ecr
+        run: |
+          ECR_ACCOUNT_URL=$(echo ${{ env.ECR_REPO_URL }} | sed "s/${{ env.ECR_REPO_NAME }}//")
+          aws ecr get-login-password --region us-west-1 | docker login --username AWS --password-stdin $ECR_ACCOUNT_URL
+          
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          platforms: linux/amd64
+          tags: ${{ env.ECR_REPO_URL }}:latest
+          
+      - name: Deploy to ECS
+        run: |
+          aws ecs update-service --cluster auris-loading-cluster --service auris-loading --force-new-deployment
+          
+      - name: Deployment notification
+        run: echo "Deployment completed successfully." 
