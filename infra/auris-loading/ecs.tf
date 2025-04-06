@@ -71,7 +71,7 @@ resource "aws_autoscaling_group" "ecs_asg" {
   name                = "auris-ecs-asg"
   vpc_zone_identifier = [aws_subnet.auris_loading_public_subnet_1.id, aws_subnet.auris_loading_public_subnet_2.id]
   min_size            = 1
-  max_size            = 1
+  max_size            = 2
   desired_capacity    = 1
 
   launch_template {
@@ -98,6 +98,7 @@ resource "aws_ecs_capacity_provider" "ec2" {
       minimum_scaling_step_size = 1
       status                    = "ENABLED"
       target_capacity           = 100
+      instance_warmup_period    = 120
     }
   }
 }
@@ -171,6 +172,29 @@ resource "aws_iam_role_policy_attachment" "ecr_pull_cloudwatch_logs_attachment" 
   policy_arn = aws_iam_policy.ecr_pull_cloudwatch_logs_policy.arn
 }
 
+# Task role for the ECS tasks (runtime permissions)
+resource "aws_iam_role" "auris_ecs_task_role" {
+  name = "auris-ecs-task-role"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "ecs-tasks.amazonaws.com"
+        }
+      }
+    ]
+  })
+}
+
+# Attach the S3 presigned URL policy to the task role instead of execution role
+# resource "aws_iam_role_policy_attachment" "ecs_s3_policy_attachment" {
+#   role       = aws_iam_role.auris_ecs_task_role.name
+#   policy_arn = aws_iam_policy.s3_presigned_url_policy.arn
+# }
+
 resource "random_string" "auris_version_hash" {
   length  = 16
   special = false
@@ -194,6 +218,7 @@ resource "aws_ecs_task_definition" "auris_ecs_task" {
   cpu                      = 800
   memory                   = 800
   execution_role_arn       = aws_iam_role.auris_ecs_task_execution_role.arn
+  task_role_arn            = aws_iam_role.auris_ecs_task_role.arn
   container_definitions = jsonencode([
     {
       name      = "auris-loading"
@@ -207,6 +232,9 @@ resource "aws_ecs_task_definition" "auris_ecs_task" {
           hostPort      = 8080
         }
       ]
+      healthCheck = {
+        command = ["CMD-SHELL", "curl -f http://localhost:8080/actuator/health || exit 1"]
+      }
       environment = [
         {
           name  = "APP_IMAGE_TAG"
@@ -281,7 +309,7 @@ resource "aws_ecs_service" "auris_ecs_service" {
     container_port   = 8080
   }
 
-  health_check_grace_period_seconds = 60
+  health_check_grace_period_seconds = 120
 
   depends_on = [aws_cloudwatch_log_group.auris_ecs_log_group, aws_lb_listener.auris_loading_listener]
 

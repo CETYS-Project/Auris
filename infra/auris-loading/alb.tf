@@ -55,6 +55,24 @@ resource "aws_lb_listener_rule" "auris_loading_listener_rule" {
   depends_on = [aws_lb_target_group.auris_loading_target_group]
 }
 
+resource "aws_lb_listener_rule" "health_check_rule" {
+  listener_arn = aws_lb_listener.auris_loading_listener.arn
+  priority     = 90
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.auris_loading_target_group.arn
+  }
+
+  condition {
+    path_pattern {
+      values = ["/actuator/health"]
+    }
+  }
+
+  depends_on = [aws_lb_target_group.auris_loading_target_group]
+}
+
 resource "aws_lb_listener" "auris_loading_listener" {
   load_balancer_arn = aws_alb.auris_loading_alb.arn
   port              = "80"
