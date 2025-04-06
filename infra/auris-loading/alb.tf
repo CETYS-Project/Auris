@@ -7,8 +7,8 @@ resource "aws_alb" "auris_loading_alb" {
 }
 
 resource "aws_lb_target_group" "auris_loading_target_group" {
-  name        = "auris-loading-target-group"
-  target_type = "ip"
+  name        = "auris-loading-tg-ec2"
+  target_type = "instance"
   port        = 8080
   protocol    = "HTTP"
   vpc_id      = aws_vpc.auris_loading_vpc.id
@@ -30,6 +30,10 @@ resource "aws_lb_target_group" "auris_loading_target_group" {
     ManagedBy   = "terraform"
     Component   = "auris-loading"
   }
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_lb_listener_rule" "auris_loading_listener_rule" {
@@ -47,6 +51,8 @@ resource "aws_lb_listener_rule" "auris_loading_listener_rule" {
       values           = [var.cloudfront_secret_header_value]
     }
   }
+
+  depends_on = [aws_lb_target_group.auris_loading_target_group]
 }
 
 resource "aws_lb_listener" "auris_loading_listener" {

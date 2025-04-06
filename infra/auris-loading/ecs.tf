@@ -1,10 +1,116 @@
 resource "aws_ecs_cluster" "auris_loading_cluster" {
   name = "auris-loading-cluster"
 
+  setting {
+    name  = "containerInsights"
+    value = "enabled"
+  }
+
   tags = {
     Environment = "production"
     ManagedBy   = "terraform"
     Component   = "auris-loading"
+  }
+}
+
+resource "aws_iam_role" "ecs_instance_role" {
+  name = "auris-ecs-instance-role"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_instance_role_attachment" {
+  role       = aws_iam_role.ecs_instance_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
+}
+
+resource "aws_iam_instance_profile" "ecs_instance_profile" {
+  name = "auris-ecs-instance-profile"
+  role = aws_iam_role.ecs_instance_role.name
+}
+
+resource "aws_launch_template" "ecs_launch_template" {
+  name_prefix   = "auris-ecs-"
+  image_id      = "ami-08ac61e31ce627a8f"
+  instance_type = "t2.micro"
+
+  iam_instance_profile {
+    name = aws_iam_instance_profile.ecs_instance_profile.name
+  }
+
+  vpc_security_group_ids = [aws_security_group.ecs_security_group.id]
+
+  user_data = base64encode(<<-EOF
+    #!/bin/bash
+    echo ECS_CLUSTER=${aws_ecs_cluster.auris_loading_cluster.name} >> /etc/ecs/ecs.config
+  EOF
+  )
+
+  tag_specifications {
+    resource_type = "instance"
+    tags = {
+      Name        = "auris-ecs-instance"
+      Environment = "production"
+      ManagedBy   = "terraform"
+      Component   = "auris-loading"
+    }
+  }
+}
+
+resource "aws_autoscaling_group" "ecs_asg" {
+  name                = "auris-ecs-asg"
+  vpc_zone_identifier = [aws_subnet.auris_loading_public_subnet_1.id, aws_subnet.auris_loading_public_subnet_2.id]
+  min_size            = 1
+  max_size            = 1
+  desired_capacity    = 1
+
+  launch_template {
+    id      = aws_launch_template.ecs_launch_template.id
+    version = "$Latest"
+  }
+
+  tag {
+    key                 = "AmazonECSManaged"
+    value               = true
+    propagate_at_launch = true
+  }
+}
+
+resource "aws_ecs_capacity_provider" "ec2" {
+  name = "auris-ec2-capacity-provider"
+
+  auto_scaling_group_provider {
+    auto_scaling_group_arn         = aws_autoscaling_group.ecs_asg.arn
+    managed_termination_protection = "DISABLED"
+
+    managed_scaling {
+      maximum_scaling_step_size = 1
+      minimum_scaling_step_size = 1
+      status                    = "ENABLED"
+      target_capacity           = 100
+    }
+  }
+}
+
+resource "aws_ecs_cluster_capacity_providers" "auris_cluster_capacity_providers" {
+  cluster_name = aws_ecs_cluster.auris_loading_cluster.name
+
+  capacity_providers = [aws_ecs_capacity_provider.ec2.name]
+
+  default_capacity_provider_strategy {
+    capacity_provider = aws_ecs_capacity_provider.ec2.name
+    weight            = 100
+    base              = 1
   }
 }
 
@@ -71,19 +177,29 @@ resource "random_string" "auris_version_hash" {
   upper   = false
 }
 
+resource "aws_cloudwatch_log_group" "auris_ecs_log_group" {
+  name              = "/ecs/auris-loading"
+  retention_in_days = 14
+  tags = {
+    Environment = "production"
+    ManagedBy   = "terraform"
+    Component   = "auris-loading"
+  }
+}
+
 resource "aws_ecs_task_definition" "auris_ecs_task" {
   family                   = "auris-loading"
-  network_mode             = "awsvpc"
-  requires_compatibilities = ["FARGATE"]
-  cpu                      = 256
-  memory                   = 512
+  network_mode             = "bridge"
+  requires_compatibilities = ["EC2"]
+  cpu                      = 800
+  memory                   = 800
   execution_role_arn       = aws_iam_role.auris_ecs_task_execution_role.arn
   container_definitions = jsonencode([
     {
       name      = "auris-loading"
       image     = "${data.terraform_remote_state.foundation.outputs.ecr_repository_url}:${var.app_image_tag}"
-      cpu       = 256
-      memory    = 512
+      cpu       = 800
+      memory    = 800
       essential = true
       portMappings = [
         {
@@ -124,7 +240,7 @@ resource "aws_ecs_task_definition" "auris_ecs_task" {
       logConfiguration = {
         logDriver = "awslogs"
         options = {
-          "awslogs-group"         = "/ecs/auris-loading"
+          "awslogs-group"         = aws_cloudwatch_log_group.auris_ecs_log_group.name
           "awslogs-region"        = "us-west-1"
           "awslogs-stream-prefix" = "ecs"
           "awslogs-create-group"  = "true"
@@ -137,32 +253,26 @@ resource "aws_ecs_task_definition" "auris_ecs_task" {
     ManagedBy   = "terraform"
     Component   = "auris-loading"
   }
-}
-
-resource "aws_cloudwatch_log_group" "auris_ecs_log_group" {
-  name              = "/ecs/${aws_ecs_task_definition.auris_ecs_task.family}"
-  retention_in_days = 14
-  tags = {
-    Environment = "production"
-    ManagedBy   = "terraform"
-    Component   = "auris-loading"
-  }
+  depends_on = [aws_cloudwatch_log_group.auris_ecs_log_group]
 }
 
 resource "aws_ecs_service" "auris_ecs_service" {
-  name            = "auris-loading"
-  cluster         = aws_ecs_cluster.auris_loading_cluster.id
-  task_definition = aws_ecs_task_definition.auris_ecs_task.arn
-  desired_count   = 1
-  launch_type     = "FARGATE"
+  name                 = "auris-loading"
+  cluster              = aws_ecs_cluster.auris_loading_cluster.id
+  task_definition      = aws_ecs_task_definition.auris_ecs_task.arn
+  desired_count        = 1
+  force_new_deployment = true
 
-  network_configuration {
-    security_groups = [aws_security_group.ecs_security_group.id]
-    subnets = [
-      aws_subnet.auris_loading_public_subnet_1.id,
-      aws_subnet.auris_loading_public_subnet_2.id
-    ]
-    assign_public_ip = true
+  deployment_controller {
+    type = "ECS"
+  }
+
+  deployment_maximum_percent         = 200
+  deployment_minimum_healthy_percent = 100
+
+  capacity_provider_strategy {
+    capacity_provider = aws_ecs_capacity_provider.ec2.name
+    weight            = 100
   }
 
   load_balancer {
