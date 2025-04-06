@@ -189,11 +189,10 @@ resource "aws_iam_role" "auris_ecs_task_role" {
   })
 }
 
-# Attach the S3 presigned URL policy to the task role instead of execution role
-# resource "aws_iam_role_policy_attachment" "ecs_s3_policy_attachment" {
-#   role       = aws_iam_role.auris_ecs_task_role.name
-#   policy_arn = aws_iam_policy.s3_presigned_url_policy.arn
-# }
+resource "aws_iam_role_policy_attachment" "ecs_s3_policy_attachment" {
+  role       = aws_iam_role.auris_ecs_task_role.name
+  policy_arn = aws_iam_policy.s3_presigned_url_policy.arn
+}
 
 resource "random_string" "auris_version_hash" {
   length  = 16
