@@ -1,5 +1,5 @@
 # Auris Loading
-![infra.png](infra.png)
+[Infra![](https://app.eraser.io/workspace/C8IkHL71sTBln4veuM8W/preview?elements=lm6EcKWIoVfgu6iPfVRe3g&type=embed)](https://app.eraser.io/workspace/C8IkHL71sTBln4veuM8W?elements=lm6EcKWIoVfgu6iPfVRe3g)
 
 ## Infra
 ### Prerequisites
