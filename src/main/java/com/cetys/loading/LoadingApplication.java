@@ -1,6 +1,5 @@
 package com.cetys.loading;
 
-import com.cetys.loading.model.Area;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 

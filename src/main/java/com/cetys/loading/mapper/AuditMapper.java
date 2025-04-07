@@ -29,6 +29,7 @@ public interface AuditMapper {
     AuditCategory toAuditCategory(BaseCategory baseCategory, Audit audit, SCategory sCategory);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "auditAnswer", ignore = true)
     @Mapping(target = "auditCategory", source = "auditCategory")
     @Mapping(target = "baseQuestion", source = "baseQuestion")
     AuditQuestion toAuditQuestion(BaseQuestion baseQuestion, AuditCategory auditCategory);
