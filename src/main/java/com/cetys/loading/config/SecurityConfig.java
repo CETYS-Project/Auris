@@ -1,5 +1,6 @@
 package com.cetys.loading.config;
 
+import org.springframework.context.annotation.Bean;
 
 @Configuration
 public class SecurityConfig {
