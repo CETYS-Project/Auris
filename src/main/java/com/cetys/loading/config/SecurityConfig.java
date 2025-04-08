@@ -56,4 +56,10 @@ public class SecurityConfig {
         return JwtDecoders.fromOidcIssuerLocation(issuer);
     }
 
+    @Bean
+    JwtAuthenticationConverter jwtAuthenticationConverter() {
+        return new JwtAuthenticationConverter();
+    }
+
+
 }
