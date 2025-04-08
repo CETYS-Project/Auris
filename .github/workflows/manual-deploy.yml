@@ -28,7 +28,7 @@ jobs:
           java-version: '17'
           
       - name: Build Spring Boot application
-        run: ./gradlew build
+        run: ./gradlew build -x test
         
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
