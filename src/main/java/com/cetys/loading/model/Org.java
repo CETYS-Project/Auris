@@ -35,6 +35,14 @@ public class Org extends BaseEntity {
     @Column(name = "name")
     String name;
 
+    @Column(name = "color_palette")
+    String colorPalette;
+
+    @Column(name = "logo_url")
+    String logoUrl;
+
+    String description;
+
     @OneToMany(mappedBy = "org", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
     List<Area> areas = new ArrayList<>();

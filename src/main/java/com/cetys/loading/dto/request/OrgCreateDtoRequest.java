@@ -13,4 +13,13 @@ import lombok.NoArgsConstructor;
 public class OrgCreateDtoRequest {
     @NotBlank(message = "El nombre de la organización es requerido")
     private String name;
+
+    @NotBlank(message = "La descripción de la organización es requerida")
+    private String description;
+
+    @NotBlank(message = "La paleta de colores de la organización es requerida")
+    private String colorPalette;
+
+    @NotBlank(message = "La URL del logo de la organización es requerida")
+    private String logoUrl;
 }
