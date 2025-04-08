@@ -50,4 +50,10 @@ public class SecurityConfig {
             );
         return http.build();
     }
+
+    @Bean
+    JwtDecoder jwtDecoder() {
+        return JwtDecoders.fromOidcIssuerLocation(issuer);
+    }
+
 }
