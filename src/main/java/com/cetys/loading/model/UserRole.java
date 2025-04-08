@@ -37,4 +37,8 @@ public class UserRole extends BaseEntity {
     @ManyToOne()
     @JoinColumn(name = "allowed_subarea_id")
     Subarea allowedSubarea;
+
+    @ManyToOne()
+    @JoinColumn(name = "role_id")
+    Role role;
 }
