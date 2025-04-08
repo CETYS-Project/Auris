@@ -1,6 +1,7 @@
 package com.cetys.loading.config;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
 @Configuration
 public class SecurityConfig {
