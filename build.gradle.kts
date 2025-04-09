@@ -24,6 +24,9 @@ repositories {
 }
 
 dependencies {
+    implementation(platform("software.amazon.awssdk:bom:2.25.17"))
+    implementation("software.amazon.awssdk:s3")
+    implementation("software.amazon.awssdk:apache-client")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.4.0")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
