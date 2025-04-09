@@ -37,6 +37,7 @@ public class AuditAnswer extends BaseEntity {
 
     String notes;
 
+    @Column(name = "image_url")
     String imageUrl;
 
 }

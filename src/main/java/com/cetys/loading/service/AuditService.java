@@ -1,6 +1,7 @@
 package com.cetys.loading.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.cetys.loading.dto.request.AnswerDtoRequest;
+import com.cetys.loading.dto.response.AuditCategoryDtoResponse;
 import com.cetys.loading.dto.response.AuditDtoResponse;
 import com.cetys.loading.mapper.AuditMapper;
 import com.cetys.loading.model.Audit;
@@ -19,6 +21,7 @@ import com.cetys.loading.model.AuditQuestion;
 import com.cetys.loading.model.BaseCategory;
 import com.cetys.loading.model.BaseQuestion;
 import com.cetys.loading.model.Subarea;
+import com.cetys.loading.projection.AuditQuestionProjection;
 import com.cetys.loading.repository.AuditAnswerRepository;
 import com.cetys.loading.repository.AuditCategoryRepository;
 import com.cetys.loading.repository.AuditQuestionRepository;
@@ -42,7 +45,8 @@ public class AuditService {
     @Transactional
     public void createAudit(Long subareaId) {
         Subarea subarea = subareaRepository.findById(subareaId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "La subárea no existe"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "La subárea no existe"));
 
         Audit audit = Audit.builder().build();
         subarea.addAudit(audit);
@@ -52,7 +56,8 @@ public class AuditService {
         List<AuditCategory> auditCategories = new ArrayList<>();
 
         for (BaseCategory baseCategory : baseCategories) {
-            auditCategories.add(auditMapper.toAuditCategory(baseCategory, audit, baseCategory.getSCategory()));
+            auditCategories.add(
+                    auditMapper.toAuditCategory(baseCategory, audit, baseCategory.getSCategory()));
         }
 
         auditCategoryRepository.saveAll(auditCategories);
@@ -71,16 +76,114 @@ public class AuditService {
     }
 
     public List<AuditDtoResponse> getAuditsBySubareaId(Long subareaId) {
-        Subarea subarea = subareaRepository.findById(subareaId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "La subárea no existe"));
+        Subarea subarea = subareaRepository.findByIdWithPrefetch(subareaId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "La subárea no existe"));
 
-        return subarea.getAudits().stream().map(auditMapper::toDto).collect(Collectors.toList());
+        // Is fine if we do this way, we are fetching all the data anyways to return it
+        // as a single JSON
+        List<Audit> audits = subarea.getAudits();
+        List<AuditDtoResponse> auditDtoResponses = new ArrayList<>();
+        for (Audit audit : audits) {
+
+            List<AuditCategory> auditCategories = audit.getAuditCategories();
+            List<Long> auditCategoryIds = auditCategories.stream()
+                    .map(AuditCategory::getId).collect(Collectors.toList());
+
+            // All in one query
+            List<AuditQuestionProjection> auditQuestions = auditQuestionRepository
+                    .findByAuditCategoryIdIn(auditCategoryIds);
+
+            HashMap<Long, Integer> questionsAnsweredPerCategory = new HashMap<>();
+            HashMap<Long, Integer> questionsTotalPerCategory = new HashMap<>();
+
+            for (AuditQuestionProjection auditQuestion : auditQuestions) {
+                Long auditCategoryId = auditQuestion.getAuditCategoryId();
+                if (auditQuestion.getAuditAnswer() != null) {
+                    questionsAnsweredPerCategory.put(auditCategoryId,
+                            questionsAnsweredPerCategory.getOrDefault(auditCategoryId, 0) + 1);
+                }
+                questionsTotalPerCategory.put(auditCategoryId,
+                        questionsTotalPerCategory.getOrDefault(auditCategoryId, 0) + 1);
+            }
+
+            List<AuditCategoryDtoResponse> auditCategoriesDto = auditCategories.stream()
+                    .map(auditCategory -> {
+                        return auditMapper.toDto(auditCategory,
+                                questionsAnsweredPerCategory.getOrDefault(auditCategory.getId(), 0),
+                                questionsTotalPerCategory.getOrDefault(auditCategory.getId(), 0),
+                                auditCategory.getSCategory());
+                    }).collect(Collectors.toList());
+
+            Integer totalQuestionsAnswered = auditCategoriesDto.stream()
+                    .map(AuditCategoryDtoResponse::getQuestionsAnswered)
+                    .reduce(0, (a, b) -> a + b);
+            Integer totalQuestions = auditCategoriesDto.stream()
+                    .map(AuditCategoryDtoResponse::getTotalQuestions)
+                    .reduce(0, (a, b) -> a + b);
+
+            AuditDtoResponse auditDtoResponse = auditMapper.toDto(audit, totalQuestionsAnswered,
+                    totalQuestions,
+                    auditCategoriesDto);
+            auditDtoResponses.add(auditDtoResponse);
+        }
+
+        return auditDtoResponses;
+    }
+
+    // TODO: How to calculate the score for each category?
+    public void getAuditResult(Long auditId) {
+        Audit audit = auditRepository.findById(auditId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "La auditoría no existe"));
+        List<AuditCategory> auditCategories = audit.getAuditCategories();
+        List<Long> auditCategoryIds = auditCategories.stream()
+                .map(AuditCategory::getId).collect(Collectors.toList());
+
+        // All in one query
+        List<AuditQuestionProjection> auditQuestions = auditQuestionRepository
+                .findByAuditCategoryIdIn(auditCategoryIds);
+
+        HashMap<Long, Integer> pointsPerCategory = new HashMap<>();
+        HashMap<Long, Integer> totalPointsPerCategory = new HashMap<>();
+
+        for (AuditQuestionProjection auditQuestion : auditQuestions) {
+            Long auditCategoryId = auditQuestion.getAuditCategoryId();
+            if (auditQuestion.getAuditAnswer() != null) {
+                pointsPerCategory.put(auditCategoryId,
+                        pointsPerCategory.getOrDefault(auditCategoryId, 0)
+                                + auditQuestion.getAuditAnswer().getScore());
+            }
+            totalPointsPerCategory.put(auditCategoryId,
+                    totalPointsPerCategory.getOrDefault(auditCategoryId, 0)
+                            + auditQuestion.getAuditAnswer().getScore());
+        }
+
+        List<AuditCategoryDtoResponse> auditCategoriesDto = auditCategories.stream().map(auditCategory -> {
+            return auditMapper.toDto(auditCategory,
+                    pointsPerCategory.getOrDefault(auditCategory.getId(), 0),
+                    totalPointsPerCategory.getOrDefault(auditCategory.getId(), 0),
+                    auditCategory.getSCategory());
+        }).collect(Collectors.toList());
+
+        Integer totalQuestionsAnswered = auditCategoriesDto.stream()
+                .map(AuditCategoryDtoResponse::getQuestionsAnswered)
+                .reduce(0, (a, b) -> a + b);
+        Integer totalQuestions = auditCategoriesDto.stream()
+                .map(AuditCategoryDtoResponse::getTotalQuestions)
+                .reduce(0, (a, b) -> a + b);
+
+        auditMapper.toDto(audit, totalQuestionsAnswered, totalQuestions,
+                auditCategoriesDto);
+
+        return;
     }
 
     @Transactional
     public void answerQuestion(Long questionId, AnswerDtoRequest answerDtoRequest) {
         AuditQuestion auditQuestion = auditQuestionRepository.findById(questionId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "La pregunta no existe"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "La pregunta no existe"));
 
         AuditAnswer auditAnswer = auditQuestion.getAuditAnswer();
         // Try to update the answer

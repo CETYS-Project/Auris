@@ -38,7 +38,7 @@ public class Audit extends BaseEntity {
     @JoinColumn(name = "subarea_id")
     Subarea subarea;
 
-    @OneToMany(mappedBy = "audit", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "audit", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @Builder.Default
     List<AuditCategory> auditCategories = new ArrayList<>();
 }

@@ -40,6 +40,9 @@ public class BaseQuestion extends BaseEntity {
 
     String question;
 
+    @Column(name = "max_score")
+    int maxScore;
+
     @OneToMany(mappedBy = "baseQuestion", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
     List<AuditQuestion> auditQuestions = new ArrayList<>();

@@ -13,5 +13,9 @@ import lombok.NoArgsConstructor;
 @Builder
 public class AuditDtoResponse {
     private Long id;
+
     private List<AuditCategoryDtoResponse> auditCategories;
+
+    private Integer questionsAnswered;
+    private Integer totalQuestions;
 }

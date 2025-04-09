@@ -1,5 +1,7 @@
 package com.cetys.loading.mapper;
 
+import java.util.List;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -34,9 +36,17 @@ public interface AuditMapper {
     @Mapping(target = "baseQuestion", source = "baseQuestion")
     AuditQuestion toAuditQuestion(BaseQuestion baseQuestion, AuditCategory auditCategory);
 
-    AuditDtoResponse toDto(Audit audit);
+    @Mapping(target = "questionsAnswered", source = "questionsAnswered")
+    @Mapping(target = "totalQuestions", source = "totalQuestions")
+    @Mapping(target = "auditCategories", source = "auditCategories")
+    AuditDtoResponse toDto(Audit audit, Integer questionsAnswered, Integer totalQuestions,
+            List<AuditCategoryDtoResponse> auditCategories);
 
-    AuditCategoryDtoResponse toDto(AuditCategory auditCategory);
+    @Mapping(target = "questionsAnswered", source = "questionsAnswered")
+    @Mapping(target = "totalQuestions", source = "totalQuestions")
+    @Mapping(target = "sCategory", source = "sCategory")
+    AuditCategoryDtoResponse toDto(AuditCategory auditCategory, Integer questionsAnswered, Integer totalQuestions,
+            SCategory sCategory);
 
     AuditQuestionDtoResponse toDto(AuditQuestion auditQuestion);
 
