@@ -12,4 +12,7 @@ import lombok.NoArgsConstructor;
 public class OrgDtoResponse {
     private Long id;
     private String name;
+    private String description;
+    private String colorPalette;
+    private String logoUrl;
 }
