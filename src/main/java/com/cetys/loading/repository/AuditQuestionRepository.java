@@ -10,8 +10,10 @@ import com.cetys.loading.model.AuditQuestion;
 import com.cetys.loading.projection.AuditQuestionProjection;
 
 public interface AuditQuestionRepository extends JpaRepository<AuditQuestion, Long> {
-    @Query("SELECT aq, ac.id as auditCategoryId FROM AuditQuestion aq " +
+    @Query("SELECT aq.id as id, aq.question as question, ac.id as auditCategoryId, aa as auditAnswer " +
+            "FROM AuditQuestion aq " +
             "JOIN aq.auditCategory ac " +
+            "LEFT JOIN aq.auditAnswer aa " +
             "WHERE ac.id IN :auditCategoryIds")
     List<AuditQuestionProjection> findByAuditCategoryIdIn(@Param("auditCategoryIds") List<Long> auditCategoryIds);
 
