@@ -41,6 +41,11 @@ public class Area extends BaseEntity {
     @Column(name = "name")
     String name;
 
+    @Column(name = "logo_url")
+    String logoUrl;
+
+    String description;
+
     @OneToMany(mappedBy = "area", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
     List<Subarea> subareas = new ArrayList<>();
