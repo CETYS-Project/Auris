@@ -79,55 +79,33 @@ public class AuditService {
         Subarea subarea = subareaRepository.findByIdWithPrefetch(subareaId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "La subárea no existe"));
-
-        // Is fine if we do this way, we are fetching all the data anyways to return it
-        // as a single JSON
+        // We are fetching everything anyways, so this won't be as bad as it looks
         List<Audit> audits = subarea.getAudits();
         List<AuditDtoResponse> auditDtoResponses = new ArrayList<>();
         for (Audit audit : audits) {
-
             List<AuditCategory> auditCategories = audit.getAuditCategories();
-            List<Long> auditCategoryIds = auditCategories.stream()
-                    .map(AuditCategory::getId).collect(Collectors.toList());
-
-            // All in one query
-            List<AuditQuestionProjection> auditQuestions = auditQuestionRepository
-                    .findByAuditCategoryIdIn(auditCategoryIds);
-
-            HashMap<Long, Integer> questionsAnsweredPerCategory = new HashMap<>();
-            HashMap<Long, Integer> questionsTotalPerCategory = new HashMap<>();
-
-            for (AuditQuestionProjection auditQuestion : auditQuestions) {
-                Long auditCategoryId = auditQuestion.getAuditCategoryId();
-                if (auditQuestion.getAuditAnswer() != null) {
-                    questionsAnsweredPerCategory.put(auditCategoryId,
-                            questionsAnsweredPerCategory.getOrDefault(auditCategoryId, 0) + 1);
+            List<AuditCategoryDtoResponse> auditCategoryDtoResponses = new ArrayList<>();
+            int totalAnsweredQuestions = 0;
+            int totalQuestions = 0;
+            for (AuditCategory auditCategory : auditCategories) {
+                int categoryAnsweredQuestions = 0;
+                int categoryTotalQuestions = 0;
+                List<AuditQuestion> auditQuestions = auditCategory.getAuditQuestions();
+                for (AuditQuestion auditQuestion : auditQuestions) {
+                    AuditAnswer auditAnswer = auditQuestion.getAuditAnswer();
+                    if (auditAnswer != null) {
+                        categoryAnsweredQuestions++;
+                    }
+                    categoryTotalQuestions++;
                 }
-                questionsTotalPerCategory.put(auditCategoryId,
-                        questionsTotalPerCategory.getOrDefault(auditCategoryId, 0) + 1);
+                totalAnsweredQuestions += categoryAnsweredQuestions;
+                totalQuestions += categoryTotalQuestions;
+                auditCategoryDtoResponses.add(auditMapper.toDto(auditCategory, categoryAnsweredQuestions,
+                        categoryTotalQuestions, auditCategory.getSCategory()));
             }
-
-            List<AuditCategoryDtoResponse> auditCategoriesDto = auditCategories.stream()
-                    .map(auditCategory -> {
-                        return auditMapper.toDto(auditCategory,
-                                questionsAnsweredPerCategory.getOrDefault(auditCategory.getId(), 0),
-                                questionsTotalPerCategory.getOrDefault(auditCategory.getId(), 0),
-                                auditCategory.getSCategory());
-                    }).collect(Collectors.toList());
-
-            Integer totalQuestionsAnswered = auditCategoriesDto.stream()
-                    .map(AuditCategoryDtoResponse::getQuestionsAnswered)
-                    .reduce(0, (a, b) -> a + b);
-            Integer totalQuestions = auditCategoriesDto.stream()
-                    .map(AuditCategoryDtoResponse::getTotalQuestions)
-                    .reduce(0, (a, b) -> a + b);
-
-            AuditDtoResponse auditDtoResponse = auditMapper.toDto(audit, totalQuestionsAnswered,
-                    totalQuestions,
-                    auditCategoriesDto);
-            auditDtoResponses.add(auditDtoResponse);
+            auditDtoResponses.add(auditMapper.toDto(audit, totalAnsweredQuestions, totalQuestions,
+                    auditCategoryDtoResponses));
         }
-
         return auditDtoResponses;
     }
 
