@@ -52,9 +52,6 @@ public class AuditQuestion extends BaseEntity {
     @OneToOne(mappedBy = "auditQuestion", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     AuditAnswer auditAnswer;
 
-    @Column(name = "max_score", columnDefinition = "int default 5")
-    int maxScore;
-
     public void setAuditAnswer(AuditAnswer auditAnswer) {
         this.auditAnswer = auditAnswer;
         auditAnswer.setAuditQuestion(this);

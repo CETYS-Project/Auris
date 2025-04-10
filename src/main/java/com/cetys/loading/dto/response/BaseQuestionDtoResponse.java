@@ -8,5 +8,4 @@ import lombok.Data;
 public class BaseQuestionDtoResponse {
     private Long id;
     private String question;
-    private int maxScore;
 }
