@@ -12,5 +12,6 @@ import lombok.NoArgsConstructor;
 public class AuditQuestionDtoResponse {
     private Long id;
     private String question;
+    private int maxScore;
     private AuditAnswerDtoResponse auditAnswer;
 }

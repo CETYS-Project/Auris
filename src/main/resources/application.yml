@@ -28,3 +28,7 @@ management:
   info:
     env:
       enabled: true
+
+springdoc:
+  swagger-ui:
+    try-it-out-enabled: false
