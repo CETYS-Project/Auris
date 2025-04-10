@@ -262,6 +262,10 @@ resource "aws_ecs_task_definition" "auris_ecs_task" {
         {
           name  = "DB_PASSWORD"
           value = data.terraform_remote_state.foundation.outputs.auris_loading_db_password
+        },
+        {
+          name  = "DB_DDL_AUTO"
+          value = var.db_ddl_auto
         }
       ]
       logConfiguration = {

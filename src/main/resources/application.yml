@@ -7,7 +7,7 @@ spring:
     password: ${DB_PASSWORD:loading}
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: ${DB_DDL_AUTO:update}
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
@@ -27,4 +27,4 @@ management:
       show-details: always
   info:
     env:
-      enabled: true 
+      enabled: true

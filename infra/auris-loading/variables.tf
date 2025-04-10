@@ -1,7 +1,13 @@
 variable "app_image_tag" {
-  description = "The image tag for the app"
+  description = "The tag of the Docker image to deploy"
   type        = string
   default     = "latest"
+}
+
+variable "db_ddl_auto" {
+  description = "Hibernate DDL auto setting (update, create, validate, etc.)"
+  type        = string
+  default     = "update"
 }
 
 variable "cloudfront_secret_header_value" {
