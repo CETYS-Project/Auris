@@ -17,8 +17,8 @@ public class AnswerDtoRequest {
     private Long questionId;
 
     @NotNull(message = "La puntuación es requerida")
-    @Min(value = 0, message = "La puntuación debe ser mayor o igual a 0")
-    @Max(value = 10, message = "La puntuación debe ser menor o igual a 10")
+    @Min(value = -1, message = "La puntuación debe ser mayor o igual a 0")
+    @Max(value = 5, message = "La puntuación debe ser menor o igual a 5")
     private int score;
 
     @NotNull(message = "Las notas son requeridas")
