@@ -1,7 +1,6 @@
 package com.cetys.loading.service;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -21,7 +20,6 @@ import com.cetys.loading.model.AuditQuestion;
 import com.cetys.loading.model.BaseCategory;
 import com.cetys.loading.model.BaseQuestion;
 import com.cetys.loading.model.Subarea;
-import com.cetys.loading.projection.AuditQuestionProjection;
 import com.cetys.loading.repository.AuditAnswerRepository;
 import com.cetys.loading.repository.AuditCategoryRepository;
 import com.cetys.loading.repository.AuditQuestionRepository;
@@ -75,6 +73,7 @@ public class AuditService {
         auditQuestionRepository.saveAll(auditQuestions);
     }
 
+    @Transactional()
     public List<AuditDtoResponse> getAuditsBySubareaId(Long subareaId) {
         Subarea subarea = subareaRepository.findByIdWithPrefetch(subareaId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
@@ -107,54 +106,6 @@ public class AuditService {
                     auditCategoryDtoResponses));
         }
         return auditDtoResponses;
-    }
-
-    // TODO: How to calculate the score for each category?
-    public void getAuditResult(Long auditId) {
-        Audit audit = auditRepository.findById(auditId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "La auditoría no existe"));
-        List<AuditCategory> auditCategories = audit.getAuditCategories();
-        List<Long> auditCategoryIds = auditCategories.stream()
-                .map(AuditCategory::getId).collect(Collectors.toList());
-
-        // All in one query
-        List<AuditQuestionProjection> auditQuestions = auditQuestionRepository
-                .findByAuditCategoryIdIn(auditCategoryIds);
-
-        HashMap<Long, Integer> pointsPerCategory = new HashMap<>();
-        HashMap<Long, Integer> totalPointsPerCategory = new HashMap<>();
-
-        for (AuditQuestionProjection auditQuestion : auditQuestions) {
-            Long auditCategoryId = auditQuestion.getAuditCategoryId();
-            if (auditQuestion.getAuditAnswer() != null) {
-                pointsPerCategory.put(auditCategoryId,
-                        pointsPerCategory.getOrDefault(auditCategoryId, 0)
-                                + auditQuestion.getAuditAnswer().getScore());
-            }
-            totalPointsPerCategory.put(auditCategoryId,
-                    totalPointsPerCategory.getOrDefault(auditCategoryId, 0)
-                            + auditQuestion.getAuditAnswer().getScore());
-        }
-
-        List<AuditCategoryDtoResponse> auditCategoriesDto = auditCategories.stream().map(auditCategory -> {
-            return auditMapper.toDto(auditCategory,
-                    pointsPerCategory.getOrDefault(auditCategory.getId(), 0),
-                    totalPointsPerCategory.getOrDefault(auditCategory.getId(), 0),
-                    auditCategory.getSCategory());
-        }).collect(Collectors.toList());
-
-        Integer totalQuestionsAnswered = auditCategoriesDto.stream()
-                .map(AuditCategoryDtoResponse::getQuestionsAnswered)
-                .reduce(0, (a, b) -> a + b);
-        Integer totalQuestions = auditCategoriesDto.stream()
-                .map(AuditCategoryDtoResponse::getTotalQuestions)
-                .reduce(0, (a, b) -> a + b);
-
-        auditMapper.toDto(audit, totalQuestionsAnswered, totalQuestions,
-                auditCategoriesDto);
-
-        return;
     }
 
     @Transactional
